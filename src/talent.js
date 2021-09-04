@@ -74,6 +74,22 @@ class Talent {
             });
     }
 
+    createCustomTalentByID(talentID){
+        /* const talentList = {};
+        let obj={};
+        for(const talentId in this.#talents) {
+            const { id, grade, name, description } = this.#talents[talentId];
+            if(id == talentID) {
+                obj = { grade, name, description, id };
+                continue;
+            }
+            if(!talentList[grade]) talentList[grade] = [{ grade, name, description, id }];
+            else talentList[grade].push({ grade, name, description, id });
+        }
+        return talentList; */
+        return this.#talents[talentID];
+    }
+
     allocationAddition(talents) {
         if(Array.isArray(talents)) {
             let addition = 0;

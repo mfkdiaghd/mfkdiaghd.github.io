@@ -102,6 +102,21 @@ class Life {
         return this.#talent.talentRandom(JSON.parse(localStorage.extendTalent||'null'));
     }
 
+    createCustomTalentByID(idStr){
+        let customTalents=[];
+        let ids=[]
+        if(idStr && idStr.length>0 && idStr.indexOf('|')>0){
+            ids=idStr.split('|');
+            ids.forEach(i =>{
+                customTalents.push(this.#talent.createCustomTalentByID(i));
+            });
+        }else{
+            customTalents.push(this.#talent.createCustomTalentByID(idStr));
+        }
+        // return this.#talent.createCustomTalentByID(id);
+        return customTalents;
+    }
+
     talentExtend(talentId) {
         localStorage.extendTalent = JSON.stringify(talentId);
     }

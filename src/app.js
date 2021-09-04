@@ -13,6 +13,9 @@ class App{
     #isEnd = false;
     #selectedExtendTalent = null;
     #hintTimeout;
+    isLifeStart=false;
+    /** 自己添加的天赋 */
+    customTalentStr='';
 
     async initial() {
         this.initPages();
@@ -24,8 +27,15 @@ class App{
         }
     }
 
-    initPages() {
+    GetQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
 
+    initPages() {
+        this.customTalentStr=this.GetQueryString('id');;
+        console.log( this.customTalentStr);
         // Loading
         const loadingPage = $(`
         <div id="main">
@@ -76,8 +86,21 @@ class App{
             .click(()=>{
                 talentPage.find('#random').hide();
                 const ul = talentPage.find('#talents');
-                this.#life.talentRandom()
-                    .forEach(talent=>{
+                let r;
+                // let customTalent=this.#life.createCustomTalentByID(1048);
+                if(this.customTalentStr && this.customTalentStr.length>0){
+
+                    let customTalent=this.#life.createCustomTalentByID(this.customTalentStr);
+                    console.log('customTalent-',customTalent);
+                    r=this.#life.talentRandom();
+                    customTalent.forEach(i=>{
+                        r.unshift(i);
+                    });
+                }else{
+                    r=this.#life.talentRandom();
+                }
+                // console.log('rand talent-',r);
+                    r.forEach(talent=>{
                         const li = createTalent(talent);
                         ul.append(li);
                         li.click(()=>{
@@ -230,6 +253,7 @@ class App{
                     this.hint(`你多使用了${total() - this.#totalMax}属性点`);
                     return;
                 }
+                this.isLifeStart=true;
                 this.#life.restart({
                     CHR: groups.CHR.get(),
                     INT: groups.INT.get(),
@@ -250,9 +274,39 @@ class App{
         </div>
         `);
 
+        let interID=setInterval(()=>{
+            if(this.#isEnd) return;
+            if(this.isLifeStart){
+                // console.log('test');
+                // if(this.#isEnd) return;
+                const trajectory = this.#life.next();
+                const { age, content, isEnd } = trajectory;
+
+                const li = $(`<li><span>${age}岁：</span>${
+                    content.map(
+                        ({type, description, grade, name, postEvent}) => {
+                            switch(type) {
+                                case 'TLT':
+                                    return `天赋【${name}】发动：${description}`;
+                                case 'EVT':
+                                    return description + (postEvent?`<br>${postEvent}`:'');
+                            }
+                        }
+                    ).join('<br>')
+                }</li>`);
+                li.appendTo('#lifeTrajectory');
+                $("#lifeTrajectory").scrollTop($("#lifeTrajectory")[0].scrollHeight);
+                if(isEnd) {
+                    this.isLifeStart=false;
+                    this.#isEnd = true;
+                    trajectoryPage.find('#summary').show();
+                }
+            }
+        },100)
+
         trajectoryPage
             .find('#lifeTrajectory')
-            .click(()=>{
+            /* .click(()=>{
                 if(this.#isEnd) return;
                 const trajectory = this.#life.next();
                 const { age, content, isEnd } = trajectory;
@@ -275,7 +329,7 @@ class App{
                     this.#isEnd = true;
                     trajectoryPage.find('#summary').show();
                 }
-            });
+            }); */
 
         trajectoryPage
             .find('#summary')
