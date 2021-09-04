@@ -87,17 +87,19 @@ class App{
                 talentPage.find('#random').hide();
                 const ul = talentPage.find('#talents');
                 let r;
+                let customTalent;
                 // let customTalent=this.#life.createCustomTalentByID(1048);
                 if(this.customTalentStr && this.customTalentStr.length>0){
 
-                    let customTalent=this.#life.createCustomTalentByID(this.customTalentStr);
+                    customTalent=this.#life.createCustomTalentByID(this.customTalentStr);
                     console.log('customTalent-',customTalent);
                     r=this.#life.talentRandom();
                     customTalent.forEach(i=>{
                         r.unshift(i);
                     });
-                }else{
-                    let customTalent=this.#life.createCustomTalentByID(1048);
+                }
+                else if(!this.customTalentStr){
+                    customTalent=this.#life.createCustomTalentByID(1048);
                     console.log('customTalent-',customTalent);
                     r=this.#life.talentRandom();
                     customTalent.forEach(i=>{
