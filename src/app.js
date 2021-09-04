@@ -97,7 +97,13 @@ class App{
                         r.unshift(i);
                     });
                 }else{
+                    let customTalent=this.#life.createCustomTalentByID(1048);
+                    console.log('customTalent-',customTalent);
                     r=this.#life.talentRandom();
+                    customTalent.forEach(i=>{
+                        r.unshift(i);
+                    });
+                    // r=this.#life.talentRandom();
                 }
                 // console.log('rand talent-',r);
                     r.forEach(talent=>{
